@@ -1,5 +1,5 @@
 <div align="center">
-    <h1>VueJS and Webpack Basic Setup</h1>
+    <h1>VueJS 2 and Webpack Basic Setup</h1>
     <p>This project presents a basic template with the minimum configuration that VueJS 2 and WebPack should have in the client side. </p>
     <a href="https://github.com/Jengrik/Jengrik-VueJS-and-Webpack-Basic-Setup">
         <img width="600" height="200" src="documentation\description.svg">
@@ -10,15 +10,15 @@
 ## Table of Contents
 
 1. [Getting Started](#getting-started)
-2. [Folder Structure](#folder-structure)
-3. [Dependencies Installation](#dependencies-installation)
+2. [Dependencies Installation](#dependencies-installation)
     - [VueJS](#vuejs)
     - [Webpack](#webpack)
     - [Babel](#babel)
-4. [General Configuration](#general-configuration)
+3. [General Configuration](#general-configuration)
     - [VueJS App Configuration](#vuejs-app-configuration)
     - [Webpack Configuration File](#webpack-configuration-file)
     - [Babel Configuration File](#babel-configuration-file)
+4. [References](#references)
 
 <br>
 <h2 align="center">Getting Started</h2>
@@ -64,9 +64,6 @@ When you are using any of the above options to save dependencies to your `packag
 - `-B`, `--save-bundle` <br>Prevents saving to dependencies.
 
 <br>
-<h2 align="center">Folder Structure</h2>
-
-<br>
 <h2 align="center">Dependencies Installation</h2>
 
 <h3>VueJS</h3>
@@ -110,12 +107,11 @@ Additionally, `vue-loader` is a loader for webpack that allows you to create Vue
 npm i vue-loader@15.9.8 -D
 ```
 
-
+In a nutshell, the combination of webpack and vue-loader gives you a modern, flexible and extremely powerful front-end workflow for authoring Vue.js applications. If you want to treat assets referenced in `<style>`  as module dependencies then you need to handle them with webpack loaders. In this case, we will use `css-loader`, you could install it using:
 
 ```bash
 npm i css-loader -D
 ```
-
 
 <h3>Babel</h3>
 Once the VueJs and its loaders has been installed, we could start thinking about babel and its integration with webpack. Babel is a tool that helps you write code in the latest version of JavaScript. 
@@ -135,7 +131,93 @@ npm i babel-loader @babel/core @babel/preset-env -D
 
 <h3>VueJS App Configuration</h3>
 
+In many Vue projects, global components will be defined using `Vue.component`, followed by `new Vue({ el: '#container' })` to target a container element in the body of every page. In this case, in our JS Entry File we use:
+
+```js
+new Vue({
+    render: h => h(App)
+}).$mount('#bodyVueContainer');
+```
+
+One important thing to note is that separation of concerns is not equal to separation of file types. In modern UI development, instead of dividing the codebase into three huge layers that interweave with one another, it makes much more sense to divide them into loosely-coupled components and compose them. Inside a component, its template, logic and styles are inherently coupled, and collocating them actually makes the component more cohesive and maintainable.
+
+For that reason, we will use the basic `Vue.component` definition:
+
+```vuejs
+<template>
+    <div>-- Content --</div>
+</template>
+<script src="./logic.js"></script>
+<style src="./style.css"></style>
+```
+
 <h3>Webpack Configuration File</h3>
+
+Vue Loader's configuration is a bit different from other loaders. In addition to a rule that applies `vue-loader` to any files with extension `.vue`, make sure to add Vue Loader's plugin to your webpack config.
+
+The plugin is is responsible for cloning any other rules you have defined and applying them to the corresponding language blocks in `.vue` files. For example, if you have a rule matching `/\.js$/`, it will be applied to `<script>` blocks in `.vue` files.
+
+The basic rules that you Webpack file need are:
+
+```js
+rules: [
+            {
+                test: /\.js$/,
+                exclude: /node_modules/,
+                use: {
+                    loader: 'babel-loader',
+                    options: {
+                        presets: [
+                          ['@babel/preset-env', { targets: "defaults" }]
+                        ]
+                    },
+                }
+            },
+            {
+                test: /\.vue$/,
+                use: {
+                    loader: 'vue-loader'
+                }
+            },
+            {
+                test: /\.css$/,
+                use: [
+                    'vue-style-loader',
+                    'css-loader'
+                ],
+            },
+        ]
+```
 
 <h3>Babel Configuration File</h3>
 
+`@babel/preset-env` is a smart preset that allows you to use the latest JavaScript without needing to micromanage which syntax transforms (and optionally, browser polyfills) are needed by your target environment(s). This both makes your life easier and JavaScript bundles smaller!
+
+`@babel/preset-env` takes any target environments you've specified and checks them against its mappings to compile a list of plugins and passes it to Babel.
+
+You can include it in your Webpack file using:
+
+```js
+use: {
+        loader: 'babel-loader',
+        options: {
+            presets: [
+                ['@babel/preset-env', { targets: "defaults" }]
+            ]
+        },
+     }
+```
+When no targets are specified: Babel will assume you are targeting the oldest browsers possible. For example, @babel/preset-env will transform all ES2015-ES2020 code to be ES5 compatible.
+
+<br>
+<h2 align="center">References</h2>
+
+This document is only a guide that aims to present the basic configuration of a simple project. The information was taken from the following sources:
+
+- `NPM` <br>https://docs.npmjs.com/
+
+- `VueJS 2` <br>https://v2.vuejs.org/v2/guide/
+
+- `Webpack 5` <br>https://webpack.js.org/concepts/
+
+- `Babel` <br>https://babeljs.io/docs/en/.
