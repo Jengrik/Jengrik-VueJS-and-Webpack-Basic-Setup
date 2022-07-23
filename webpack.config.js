@@ -7,6 +7,12 @@ module.exports = {
         path: __dirname + '/dist',
         filename: 'bundle.js'
     },
+    stats: {
+        assets: true,
+        assetsSort: 'field',
+        colors: true,
+        modules: false,
+    },
     module:{
         rules: [
             {
