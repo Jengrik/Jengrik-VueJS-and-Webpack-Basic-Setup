@@ -9,7 +9,7 @@
     "prod": "webpack --mode production"
   },
   "keywords": [],
-  "author": "",
+  "author": "Jhon Erik Navarrete Gómez",
   "license": "ISC",
   "devDependencies": {
     "@babel/core": "^7.18.6",
